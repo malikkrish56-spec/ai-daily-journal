@@ -260,7 +260,7 @@ export default function Journal({ user }) {
                 ${isToday && !hasEntry ? 'ring-2 ring-blue-300 ring-offset-2' : ''}
               `}
             >
-              {day}
+              {hasEntry ? '🔥' : day}
             </div>
           ))}
         </div>
