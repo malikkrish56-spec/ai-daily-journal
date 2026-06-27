@@ -250,7 +250,7 @@ export default function Journal({ user }) {
   return (
     <div className="w-full max-w-3xl flex flex-col gap-8">
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 className="text-sm font-bold text-orange-500 mb-4 uppercase tracking-wider flex items-center gap-2">
+      <h3 className="text-sm font-bold text-orange-500 mb-4 uppercase tracking-wider flex items-center gap-2">
   <span className="animate-bounce">🔥</span> This Month's Streak
 </h3>
         <div className="flex flex-wrap gap-2">
