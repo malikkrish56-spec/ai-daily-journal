@@ -17,7 +17,7 @@ export default function Journal({ user }) {
   const [monthEntries, setMonthEntries] = useState(new Set());
 
   const [adviceScope, setAdviceScope] = useState('today');
-  const [conversation, setConversation] = useState([]); // [{ role: 'ai' | 'user', text: '...' }]
+  const [conversation, setConversation] = useState([]);
   const [cachedEntries, setCachedEntries] = useState(null);
   const [followUpText, setFollowUpText] = useState('');
   const [isGeneratingAdvice, setIsGeneratingAdvice] = useState(false);
@@ -27,14 +27,11 @@ export default function Journal({ user }) {
   const todayStr = getLocalYMD(today);
   const docId = `${user.uid}_${todayStr}`;
 
-  // Monday = 1 ... Sunday = 0 in JS getDay(). Week is "complete" once we reach Sunday.
-  const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  const dayOfWeek = today.getDay();
   const isWeeklyUnlocked = dayOfWeek === 0;
-
   const daysInCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
   const isMonthlyUnlocked = today.getDate() === daysInCurrentMonth;
 
-  // Figure out the next unlock date for each, for the tooltip text
   const getNextSunday = () => {
     const d = new Date(today);
     const daysUntilSunday = (7 - dayOfWeek) % 7 || 7;
@@ -249,10 +246,18 @@ export default function Journal({ user }) {
 
   return (
     <div className="w-full max-w-3xl flex flex-col gap-8">
+
+      {/* Streak Card */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <h3 className="text-sm font-bold text-orange-500 mb-4 uppercase tracking-wider flex items-center gap-2">
-  <span className="animate-bounce">🔥</span> This Month's Streak
-</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-bold text-orange-500 uppercase tracking-wider">
+            This Month's Streak
+          </h3>
+          <span className="flex items-center gap-1">
+            <span className="fire-animate" style={{fontSize: '1.3rem', lineHeight: '1'}}>🔥</span>
+            <span className="text-orange-500 font-bold text-sm">{monthEntries.size}</span>
+          </span>
+        </div>
         <div className="flex flex-wrap gap-2">
           {daysArray.map(({ day, dateStr, hasEntry, isToday }) => (
             <div
@@ -268,13 +273,13 @@ export default function Journal({ user }) {
         </div>
       </div>
 
+      {/* Entry Card */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
         <div className="flex justify-between items-end">
           <div>
             <h2 className="text-2xl font-semibold text-slate-800">Today's Entry</h2>
             <p className="text-slate-500">{today.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
           </div>
-
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -305,6 +310,7 @@ export default function Journal({ user }) {
         </div>
       </div>
 
+      {/* Level Up Card */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -317,9 +323,9 @@ export default function Journal({ user }) {
               const locked = (scope === 'weekly' && !isWeeklyUnlocked) || (scope === 'monthly' && !isMonthlyUnlocked);
               const label = scope === 'today' ? 'Today' : scope === 'weekly' ? '7 Days' : 'This Month';
               const tooltip = scope === 'weekly'
-                ? `Unlocks Sunday (${getNextSunday()}), once the week's complete`
+                ? `Unlocks Sunday (${getNextSunday()})`
                 : scope === 'monthly'
-                  ? `Unlocks ${getLastDayOfMonthLabel()}, once the month's complete`
+                  ? `Unlocks ${getLastDayOfMonthLabel()}`
                   : '';
 
               return (
@@ -344,8 +350,8 @@ export default function Journal({ user }) {
         {((adviceScope === 'weekly' && !isWeeklyUnlocked) || (adviceScope === 'monthly' && !isMonthlyUnlocked)) && (
           <div className="text-xs text-slate-400 -mt-2">
             {adviceScope === 'weekly'
-              ? `This unlocks on Sunday (${getNextSunday()}), once the current week wraps up.`
-              : `This unlocks on ${getLastDayOfMonthLabel()}, the last day of the month.`}
+              ? `Unlocks on Sunday (${getNextSunday()}), once the current week wraps up.`
+              : `Unlocks on ${getLastDayOfMonthLabel()}, the last day of the month.`}
           </div>
         )}
 
